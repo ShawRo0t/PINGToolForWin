@@ -69,7 +69,7 @@ def ping(name,address, quantity = 4):
         while timeit.default_timer() - start < 1:
             continue  # interval 1s between pings
         #print('IP = %(address)s   seq_num = %(sequence_number)s    time = %(stop)sms' % locals())
-        if (stop>=1500):
+        if (stop>=1200):
             log.write('[*]使用人 = %(name)s      IP地址 = %(address)s      状态：已关机      时间 = %(stop)sms\n' % locals())
             shutdowncom.append(name)
         else:
@@ -91,6 +91,6 @@ if __name__ == '__main__':
             log.write('[*]使用人 = %(name)s      IP地址 = %(address)s      状态：检测失败      时间 = 未知\n' % locals())
     log.write('='*80+'\n')
     filter(None, all_result)
-    all_result = "、".join(all_result).replace("、、","、")[:-1]
+    all_result = "、".join(all_result).replace("、、","、")
     log.write('[*]经统计，'+all_result+'的电脑处于开机状态。')
     log.close()
