@@ -8,9 +8,8 @@ log = open(str(time.strftime("%Y-%m-%d", time.localtime()))+'.txt','a')
 def createIcmp(sn = 16):
     TYPE = 8
     CODE = 0
-    ID = 1  # identifier
-    #sn = 16  # sequence number
-    DATA = 'hi:)'#doesnt matter
+    ID = 1
+    DATA = 'hi:)'
 
     header = struct.pack('BBHHH', TYPE, CODE, 0, ID, sn)
     data = bytearray()
@@ -21,7 +20,6 @@ def createIcmp(sn = 16):
 
 
 def get_checksum(data):
-    #fixme: im sure it could be done better (faster)
     count_to = len(data)
     counter = 0
     ch_sum = 0
@@ -47,7 +45,6 @@ def get_checksum(data):
 def ping(name,address, quantity = 4):
     shutdowncom = []
     opencom = []
-    #fixme: if response will come after 3s, weird things may happen, fix needed. comparing the seq_numbers would be ok
 
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.getprotobyname('icmp'), None)
     for i in range(quantity):
@@ -57,18 +54,17 @@ def ping(name,address, quantity = 4):
         my_socket.sendto(icmp_frame, (address, 1))
         start = timeit.default_timer()
 
-        block = select.select([my_socket],[],[],3) # waiting for message in socket, timeout 3s
+        block = select.select([my_socket],[],[],3)
         if block[0]:
-            ip_frame = my_socket.recv(1024)  # ip frame !!!
+            ip_frame = my_socket.recv(1024)
             stop = int(1000*(timeit.default_timer() - start))
-            received_icmp_frame = ip_frame[20:28]  # isolating ICMP frame (without data) from IP frame
+            received_icmp_frame = ip_frame[20:28]
             type, code, cs, id, sn = struct.unpack('bbHHh', received_icmp_frame)
         else:
             stop = 2999
 
         while timeit.default_timer() - start < 1:
-            continue  # interval 1s between pings
-        #print('IP = %(address)s   seq_num = %(sequence_number)s    time = %(stop)sms' % locals())
+            continue
         if (stop>=1200):
             log.write('[*]使用人 = %(name)s      IP地址 = %(address)s      状态：已关机      时间 = %(stop)sms\n' % locals())
             shutdowncom.append(name)
